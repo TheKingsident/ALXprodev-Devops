@@ -8,6 +8,7 @@ echo "=================================================================="
 echo "Enter correct pokemon name in small caps (e.g., pikachu):"
 read pokemon_name
 
+#"https://pokeapi.co/api/v2/pokemon/ but better to use the search endpoint
 pokemon_url=$(curl -s "https://pokeapi.co/api/v2/pokemon?limit=1000" | jq '.results[] | select(.name == "'"$pokemon_name"'") | .url')
 if [ -z "$pokemon_url" ]; then
   echo "Pokemon not found. Please check the name and try again."
