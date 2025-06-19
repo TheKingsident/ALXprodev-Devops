@@ -1,0 +1,19 @@
+#!/bin/bash
+
+# This script fetches data from the PokeAPI and saves it to a file named data.json
+
+echo "This script will fetch data from the PokeAPI and save it to data.json"
+echo "=================================================================="
+
+echo "Enter correct pokemon name in small caps (e.g., pikachu):"
+read pokemon_name
+
+pokemon_url=$(curl -s "https://pokeapi.co/api/v2/pokemon?limit=1000" | jq '.results[] | select(.name == "'"$pokemon_name"'") | .url')
+if [ -z "$pokemon_url" ]; then
+  echo "Pokemon not found. Please check the name and try again."
+  exit 1
+fi
+echo "URL for the pokemon ${pokemon_name} is: ${pokemon_url}"
+echo "=================================================================="
+echo "Fetching data for ${pokemon_name} from PokeAPI..."
+curl -s "${pokemon_url}" > "${pokemon_name}_data.json"

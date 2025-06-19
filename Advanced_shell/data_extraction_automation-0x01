@@ -1,0 +1,12 @@
+#!/bin/bash
+
+pokemon_name=$(jq -r '.name' data.json)
+pokemon_type=$(jq -r '.types[0].type.name' data.json)
+pokemon_weight=$(jq -r '.weight' data.json)
+pokemon_height=$(jq -r '.height' data.json)
+
+Pokemon_name=$(echo "${pokemon_name}" | awk '{ for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) tolower(substr($i,2)); print }')
+Pokemon_type=$(echo "${pokemon_type}" | awk '{ for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) tolower(substr($i,2)); print }')
+Pokemon_height=$(echo "scale=1; $pokemon_height / 10" | bc)
+
+echo "${Pokemon_name} is of type ${Pokemon_type}, weighs ${pokemon_weight}kg, and is ${Pokemon_height}m tall."
