@@ -10,4 +10,4 @@ type=$(echo "${type}" | sed 's/.*/\L&/; s/[a-z]*/\u&/g')
 formatted_height=$(echo "scale=1; $height / 10" | bc)
 formatted_weight=$weight
 
-echo "${name} is of type ${type}, weighs ${formatted_weight}kg, and is ${formatted_height}m tall."
+echo "\"${name} is of type ${type}, weighs ${formatted_weight}kg, and is ${formatted_height}m tall.\""
