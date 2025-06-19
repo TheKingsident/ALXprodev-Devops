@@ -1,0 +1,27 @@
+#!/bin/bash
+
+pokemon_list='[Bulbasaur, Ivysaur, Venusaur, Charmander, Charmeleon]'
+#["bulbasaur", "ivysaur", "venusaur", "charmander", "charmeleon"]
+cleaned_list=$(echo "$pokemon_list" | sed 's/\[//;s/\]//' | tr -d ' ')
+IFS=',' read -r -a cleaned_list <<< "$cleaned_list"
+
+echo "Name,Height (m),Weight (kg)" > summaryData.csv
+
+for name in "${cleaned_list[@]}"; do
+    name=$(echo "$name" | tr '[:upper:]' '[:lower:]')
+    weight=$(jq -r '.weight' "${name}.json")
+    height=$(jq -r '.height' "${name}.json")
+
+    formatted_name=$(echo "${name}" | awk '{ for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) tolower(substr($i,2)); print }')
+    formatted_height=$(echo "scale=1; $height / 10" | bc)
+    formatted_weight=$(echo "scale=1; $weight / 10" | bc)
+
+    echo -e "$formatted_name,$formatted_height,$formatted_weight" >> summaryData.csv
+done
+sleep 3
+
+average_height=$(awk -F, 'NR>1 {sum += $2} END {printf "%.2f", sum/(NR-1)}' summaryData.csv)
+average_weight=$(awk -F, 'NR>1 {sum += $3} END {printf "%.2f", sum/(NR-1)}' summaryData.csv)
+
+echo "Average Height: ${average_height}m"
+echo "Average Weight: ${average_weight}kg"
