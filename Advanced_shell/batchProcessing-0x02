@@ -1,0 +1,32 @@
+#!/bin/bash
+
+pokemon_list='[Bulbasaur, Ivysaur, Venusaur, Charmander, Charmeleon]'
+cleaned_list=$(echo "$pokemon_list" | sed 's/\[//;s/\]//' | tr -d ' ')
+IFS=',' read -r -a cleaned_list <<< "$cleaned_list"
+
+for name in "${cleaned_list[@]}"; do
+    name=$(echo "$name" | tr '[:upper:]' '[:lower:]')
+    echo "Fetching data for $name..."
+    
+    pokemon_url=$(curl -s "https://pokeapi.co/api/v2/pokemon?limit=1000" | jq -r '.results[] | select(.name == "'"$name"'") | .url')
+    
+    if [ -z "$pokemon_url" ]; then
+        echo "Pokemon $name not found."
+        continue
+    fi
+    
+    echo "URL for the pokemon ${name} is: ${pokemon_url}"
+    
+    if ! curl -s "${pokemon_url}" -o "${name}.json"; then
+        echo "Failed to fetch data for ${name}."
+        continue
+    fi
+    
+    if ! jq empty "${name}.json" 2>/dev/null; then
+        echo "Downloaded data for ${name} is not valid JSON."
+        continue
+    fi
+    
+    echo "Data successfully saved to ${name}.json"
+    sleep 3
+done
