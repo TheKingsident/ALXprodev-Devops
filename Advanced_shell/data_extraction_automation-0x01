@@ -6,7 +6,7 @@ weight=$(jq -r '.weight' data.json)
 height=$(jq -r '.height' data.json)
 
 name=$(echo "${name}" | awk '{ for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) tolower(substr($i,2)); print }')
-type=$(echo "${type}" | awk '{ for(i=1;i<=NF;i++) $i=toupper(substr($i,1,1)) tolower(substr($i,2)); print }')
+type=$(echo "${type}" | sed 's/.*/\L&/; s/[a-z]*/\u&/g')
 formatted_height=$(echo "scale=1; $height / 10" | bc)
 formatted_weight=$weight
 
